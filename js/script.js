@@ -13,7 +13,12 @@ let service2
 let askingTitle
 
 const isNumber = function (num) {
-    return !isNaN(parseFloat(num)) && isFinite(num)
+    return !isNaN(parseFloat(num)) && isFinite(num) && num != 0
+}
+
+const getNumber = function (num) {
+    let numNew = Number(String(num).trim())
+    return numNew
 }
 
 const asking = function() {
@@ -24,6 +29,7 @@ const asking = function() {
     
     do {
         screenPrice = +prompt('Сколько будет стоить данная работа?', '12000')
+        getNumber(screenPrice)
     } while (!isNumber(screenPrice))
         
     adaptive = confirm('Нужен ли адаптив на сайте?')
@@ -36,13 +42,14 @@ const getAllServicePrices = function () {
     for (let i = 0; i < 2; i++) {
 
         if (i === 0) {
-            service1 = prompt('Какой дополнительный тип услуги нужен?', 'метрика');
+            service1 = prompt('Какой дополнительный тип услуги нужен?', 'метрика')
         } else if (i === 1) {
-            service2 = prompt('Какой дополнительный тип услуги нужен?', 'адаптация');
+            service2 = prompt('Какой дополнительный тип услуги нужен?', 'адаптация')
         }
 
         do {
-            sumControl = +prompt("Сколько это будет стоить?", '500');
+            sumControl = +prompt("Сколько это будет стоить?", '500')
+            getNumber(sumControl)
         } while (!isNumber(sumControl))
         sum += sumControl
     }
@@ -59,7 +66,7 @@ const getFullPrice = function (screenPrice, allServicePrices) {
 }
 
 const getServicePercentPrices = function (fullPrice, rollback) {
-    return fullPrice - (fullPrice * (rollback/100))
+    return fullPrice - (fullPrice * (rollback / 100))
 }
 
 const getRollbackMessage = function(fullPrice) {
