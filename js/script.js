@@ -1,22 +1,53 @@
 'use strict';
 
-let title = prompt('Как называется ваш проект?', 'проект');
-let screens = prompt('Какие типы экранов нужно разработать?', "Простые, Сложные, Интерактивные");
-let screenPrice = +prompt('Сколько будет стоить данная работа?', '12000');
-let adaptive = confirm('Нужен ли адаптив на сайте?');
+let title
+let screens
+let screenPrice
+let adaptive
+let rollback = Math.round(Math.random() * 50)
+let fullPrice
+let allServicePrices
+let servicePercentPrice
+let service1
+let service2
+let askingTitle
 
-let rollback = Math.round(Math.random() * 50);
-let fullPrice;
-let allServicePrices;
-let servicePercentPrice;
+const isNumber = function (num) {
+    return !isNaN(parseFloat(num)) && isFinite(num)
+}
 
-let service1 = prompt('Какой дополнительный тип услуги нужен?', 'метрика');
-let servicePrice1 = +prompt('Сколько это будет стоить?', '500');
-let service2 = prompt('Какой дополнительный тип услуги нужен?', 'адаптация');
-let servicePrice2 = +prompt('Сколько это будет стоить?', '500');
+const asking = function() {
+    title = prompt('Как называется ваш проект?', 'проект')
+    screens = prompt('Какие типы экранов нужно разработать?', "Простые, Сложные, Интерактивные")
 
-const getAllServicePrices = function (servicePrice1, servicePrice2) {
-    return servicePrice1 + servicePrice2
+    screenPrice = prompt('Сколько будет стоить данная работа?', '12000')
+    
+    do {
+        screenPrice = +prompt('Сколько будет стоить данная работа?', '12000')
+    } while (!isNumber(screenPrice))
+        
+    adaptive = confirm('Нужен ли адаптив на сайте?')
+}
+
+const getAllServicePrices = function () {
+    let sum = 0
+    let sumControl
+
+    for (let i = 0; i < 2; i++) {
+
+        if (i === 0) {
+            service1 = prompt('Какой дополнительный тип услуги нужен?', 'метрика');
+        } else if (i === 1) {
+            service2 = prompt('Какой дополнительный тип услуги нужен?', 'адаптация');
+        }
+
+        do {
+            sumControl = +prompt("Сколько это будет стоить?", '500');
+        } while (!isNumber(sumControl))
+        sum += sumControl
+    }
+
+    return sum
 }
 
 const showTypeOff = function(variable) {
@@ -40,17 +71,18 @@ const getRollbackMessage = function(fullPrice) {
         return "Скидка не предусмотрена"
     } else {
         return "Что то пошло не так"
-    };
+    }
 }
 
 const getTitle = function(title) {
     return title.trim()[0].toUpperCase() + title.trim().substr(1).toLowerCase()
 }
 
-allServicePrices = getAllServicePrices(servicePrice1, servicePrice2);
-fullPrice = getFullPrice(screenPrice, allServicePrices);
-servicePercentPrice = getServicePercentPrices(fullPrice, rollback);
-title = getTitle(title);
+askingTitle = asking()
+allServicePrices = getAllServicePrices()
+fullPrice = getFullPrice(screenPrice, allServicePrices)
+servicePercentPrice = getServicePercentPrices(fullPrice, rollback)
+title = getTitle(title)
 
 showTypeOff(title)
 showTypeOff(fullPrice)
@@ -58,7 +90,10 @@ showTypeOff(adaptive)
 showTypeOff(screenPrice)
 showTypeOff(rollback)
 
-console.log (screens.toLowerCase().split(', '));
-console.log (getRollbackMessage(fullPrice));
-console.log (servicePercentPrice);
+console.log("allServicePrices", allServicePrices)
 
+console.log(screens.toLowerCase().split(', '));
+console.log(getRollbackMessage(fullPrice));
+console.log(servicePercentPrice);
+console.log(screens.length);
+console.log("Стоимость верстки экранов " + screenPrice + " рублей и Стоимость разработки сайта " + fullPrice + " рублей");
