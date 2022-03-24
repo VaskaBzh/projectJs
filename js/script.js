@@ -8,7 +8,7 @@ const appData = {
     rollback: Math.round(Math.random() * 100),
     fullPrice: 0,
     allServicePrices: 0,
-    servicePercentPrice: 0,
+    servicePercentPrices: 0,
     service1: '',
     service2: '',
     getNumber: function (num) {
@@ -45,7 +45,7 @@ const appData = {
             sumControl = +prompt("Сколько это будет стоить?", '500')
             appData.getNumber(sumControl)
         } while (!appData.isNumber(sumControl))
-        sum += sumControl
+            sum += sumControl
         }
 
         return sum
@@ -73,22 +73,34 @@ const appData = {
     getTitle: function() {
         return appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase()
     },
+    logger: function () {
+        for(let prop in appData) {
+            if (typeof appData[prop] !== "function") {
+                appData.showTypeOff(appData[prop])
+            }
+        }
+        // appData.showTypeOff(appData.title)
+        // appData.showTypeOff(appData.screenPrice)
+        // appData.showTypeOff(appData.adaptive)
+        // appData.showTypeOff(appData.rollback)
+        // appData.showTypeOff(appData.fullPrice)
+        // console.log("allServicePrices", appData.allServicePrices)
+        // console.log(appData.screens.toLowerCase().split(', '))
+        // console.log(appData.getRollbackMessage(appData.fullPrice))
+        // console.log(appData.servicePercentPrices)
+        // console.log(appData.screens.length)
+        // console.log("Стоимость верстки экранов " + appData.screenPrice + " рублей и Стоимость разработки сайта " + appData.fullPrice + " рублей");
+    },
     start: function () {
         appData.getNumber()
         appData.isNumber()
         appData.asking()
-        appData.getAllServicePrices()
-        appData.showTypeOff(appData.title)
-        appData.showTypeOff(appData.screens)
-        appData.showTypeOff(appData.screenPrice)
-        appData.showTypeOff(appData.adaptive)
-        appData.showTypeOff(appData.rollback)
-        appData.showTypeOff(appData.fullPrice)
-        appData.getFullPrice()
-        appData.getServicePercentPrices()
-        appData.getRollbackMessage()
-        appData.getTitle()
-    }  
+        appData.allServicePrices = appData.getAllServicePrices()
+        appData.fullPrice = appData.getFullPrice()
+        appData.servicePercentPrices = appData.getServicePercentPrices()
+        appData.title = appData.getTitle()
+        appData.logger()
+    }
 }
 
 appData.start()
