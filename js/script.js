@@ -79,26 +79,15 @@ const appData = {
                 appData.showTypeOff(appData[prop])
             }
         }
-        // appData.showTypeOff(appData.title)
-        // appData.showTypeOff(appData.screenPrice)
-        // appData.showTypeOff(appData.adaptive)
-        // appData.showTypeOff(appData.rollback)
-        // appData.showTypeOff(appData.fullPrice)
-        // console.log("allServicePrices", appData.allServicePrices)
-        // console.log(appData.screens.toLowerCase().split(', '))
-        // console.log(appData.getRollbackMessage(appData.fullPrice))
-        // console.log(appData.servicePercentPrices)
-        // console.log(appData.screens.length)
-        // console.log("Стоимость верстки экранов " + appData.screenPrice + " рублей и Стоимость разработки сайта " + appData.fullPrice + " рублей");
     },
     start: function () {
         appData.getNumber()
-        appData.isNumber()
         appData.asking()
         appData.allServicePrices = appData.getAllServicePrices()
         appData.fullPrice = appData.getFullPrice()
         appData.servicePercentPrices = appData.getServicePercentPrices()
         appData.title = appData.getTitle()
+        
         appData.logger()
     }
 }
