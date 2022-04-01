@@ -8,8 +8,8 @@ const otherItemsNumber = document.querySelectorAll('.other-items.number')
 const inputRange = document.querySelector('.rollback input')
 const inputRangeValue = document.querySelector('.rollback .range-value')
 
-const startBth = document.getElementsByClassName('handler_btn')[0]
-const resetBth = document.getElementsByClassName('handler_btn')[1]
+const startBtn = document.getElementsByClassName('handler_btn')[0]
+const resetBtn = document.getElementsByClassName('handler_btn')[1]
 
 const total = document.getElementsByClassName('total-input')[0]
 const totalCount = document.getElementsByClassName('total-input')[1]
@@ -17,14 +17,15 @@ const totalCountOther = document.getElementsByClassName('total-input')[2]
 const fullTotalCount = document.getElementsByClassName('total-input')[3]
 const totalCountRollback = document.getElementsByClassName('total-input')[4]
 
-let screens = document.querySelectorAll('.screen')
+let screens
 
 const appData = {
     title: '',
     screens: [  ],
+    count: 0,
     screenPrice: 0,
     adaptive: true,
-    rollback: Math.round(Math.random() * 100),
+    rollback: 0,
     fullPrice: 0,
     servicePricesPercent: 0,
     servicePricesNumber: 0,
@@ -32,32 +33,57 @@ const appData = {
     servicesPercent: {},
     servicesNumber: {},
     init: function () {
+
         appData.addTitle()
 
-        startBth.addEventListener('click', appData.start)
+        startBtn.addEventListener('click', function () {
+            appData.start()
+
+            inputRange.addEventListener('input', function () {
+                appData.getRollback()
+                appData.showRollback()
+                console.log(appData.servicePercentPrices)
+            })
+        })
+
+        startBtn.addEventListener('mouseover', function () {
+            screens = document.querySelectorAll('.screen')
+
+            screens.forEach(function(screen) {
+                const select = screen.querySelector('select')
+                const input = screen.querySelector('input')
+    
+                function BtnNotAllow() {
+                    if (input.value != 0 && select.value != 0) {
+                        startBtn.style.cursor = 'pointer'
+                    }  else {
+                        startBtn.style.cursor = 'not-allowed'
+                    }
+                }
+                BtnNotAllow()
+            })
+        })
+
+
         buttonPlus.addEventListener('click', appData.addScreenBlock)
     },
     addTitle: function () {
         document.title = title.textContent
     },
     start: function () {
+        appData.resetResult()
         appData.addScreens()
         appData.addServices()
 
         appData.addPrices()
-        // appData.getServicePercentPrices()
         
         // appData.logger()
+        appData.showRollback()
         appData.showResult()
     },
     getNumber: function (num) {
         let numNew = Number(String(num).trim())
         return numNew
-    },
-    showResult: function () {
-        total.value = appData.screenPrice
-        totalCountOther.value = appData.servicePricesPercent + appData.servicePricesNumber
-        fullTotalCount.value = appData.fullPrice
     },
     addScreens: function () {
         screens = document.querySelectorAll('.screen')
@@ -73,6 +99,8 @@ const appData = {
                 price: +select.value * +input.value
             })
         })
+
+        appData.count = screens.length
     },
     addServices: function () {
       otherItemsPercent.forEach(function (item) {
@@ -95,9 +123,17 @@ const appData = {
     })  
     },
     addScreenBlock: function () {
-      const cloneScreen = screens[0].cloneNode(true)
+        screens = document.querySelectorAll('.screen')
 
-      screens[screens.length - 1].after(cloneScreen)
+        const cloneScreen = screens[0].cloneNode(true)
+
+        screens[screens.length - 1].after(cloneScreen)
+    },
+    getRollback: function () {
+        inputRange.addEventListener('input', function () {
+            inputRangeValue.textContent = inputRange.value + '%'
+            appData.rollback = inputRange.value
+        })
     },
     addPrices: function() {
         for (let screen of appData.screens) {
@@ -114,25 +150,33 @@ const appData = {
 
         appData.fullPrice = +appData.screenPrice + appData.servicePricesNumber + appData.servicePricesPercent
     },
+    showRollback: function () {
+        appData.servicePercentPrices = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100))
+
+        totalCountRollback.value = appData.servicePercentPrices
+    },
+    showResult: function () {
+        total.value = appData.screenPrice
+        totalCountOther.value = appData.servicePricesPercent + appData.servicePricesNumber
+        fullTotalCount.value = appData.fullPrice
+        totalCount.value = appData.count
+    },
+    resetResult: function () {
+        total.value = ''
+        totalCountOther.value = ''
+        fullTotalCount.value = ''
+        totalCountRollback.value = ''
+        totalCount.value = ''
+        
+        appData.screens.length = 0
+        appData.screenPrice = 0
+        appData.servicePricesNumber = 0
+        appData.servicePricesPercent = 0
+        appData.fullPrice = 0
+        appData.servicePercentPrices = 0
+    },
     showTypeOff: function(variable) {
         console.log(variable, typeof variable);
-    },
-    getServicePercentPrices: function () {
-        appData.servicePercentPrices = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100))
-    },
-    getRollbackMessage: function() {
-        if (appData.fullPrice >= 30000){
-            return "Даем скидку в 10%"
-        } else if (appData.fullPrice >= 15000 && appData.fullPrice < 30000){
-            return "Даем скидку 5%"
-        } else if (appData.fullPrice >= 0 && appData.fullPrice < 15000){
-            return "Скидка не предусмотрена"
-        } else {
-            return "Что то пошло не так"
-        }
-    },
-    getTitle: function() {
-        appData.title = appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase()
     },
     logger: function () {
         for(let prop in appData) {
