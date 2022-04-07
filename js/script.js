@@ -38,50 +38,40 @@ const appData = {
         appData.getRollback()
 
         startBtn.addEventListener('click', () => {
-
-            inputRange.addEventListener('input', () => {
-                appData.getRollback()
-                appData.showRollback()
-            })
-            
-            otherItemsPercent.forEach((item) => {
-                const check = item.querySelector('input[type=checkbox]')
-                const input = item.querySelector('input[type=text]')
-            
-                input.disabled = true
-                check.disabled = true
-            })  
-            otherItemsNumber.forEach((item) => {
-                const check = item.querySelector('input[type=checkbox]')
-                const input = item.querySelector('input[type=text]')
-                
-                input.disabled = true
-                check.disabled = true
-            })  
-            
-            screens.forEach((screen) => {
-                const select = screen.querySelector('select')
-                const input = screen.querySelector('input')
-    
-                input.disabled = true
-                select.disabled = true
-                buttonPlus.disabled = true
-            })
-        })
-
-        startBtn.addEventListener('click', () => {
             screens = document.querySelectorAll('.screen')
 
             screens.forEach((screen) => {
                 const select = screen.querySelector('select')
                 const input = screen.querySelector('input')
-    
+
                 function btnNotAllow() {
-                    if (input.value != 0 && select.value != 0) {
-                        startBtn.style.cursor = 'pointer'
+                    if (input.value != 0 && select.value != '') {
                         appData.start()
-                    }  else {
-                        startBtn.style.cursor = 'not-allowed'
+                
+                        inputRange.addEventListener('input', () => {
+                            appData.getRollback()
+                            appData.showRollback()
+                        })
+                        
+                        otherItemsPercent.forEach((item) => {
+                            const check = item.querySelector('input[type=checkbox]')
+                            check.disabled = true
+                        })  
+                        otherItemsNumber.forEach((item) => {
+                            const check = item.querySelector('input[type=checkbox]')
+                            check.disabled = true
+                        })  
+                        
+                        screens.forEach((screen) => {
+                            const select = screen.querySelector('select')
+                            const input = screen.querySelector('input')
+                
+                            input.disabled = true
+                            select.disabled = true
+                            buttonPlus.disabled = true
+                        })
+            
+            
                     }
                 }
                 btnNotAllow()
@@ -105,6 +95,7 @@ const appData = {
             })
         })
 
+        resetBtn.addEventListener('click', appData.reset)
 
         buttonPlus.addEventListener('click', appData.addScreenBlock)
     },
@@ -112,6 +103,7 @@ const appData = {
         document.title = title.textContent
     },
     start: () => {
+        appData.switchStyleFirst()
         appData.resetResult()
         appData.addScreens()
         appData.addServices()
@@ -121,6 +113,10 @@ const appData = {
         // appData.logger()
         appData.showRollback()
         appData.showResult()
+    },
+    switchStyleFirst: () => {
+        startBtn.style.display = 'none'
+        resetBtn.style.display = 'block'
     },
     getNumber: (num) => {
         let numNew = Number(String(num).trim())
@@ -203,14 +199,64 @@ const appData = {
         totalCount.value = this.count
     },
     reset: () => {
+        appData.resetResult()
+        appData.switchStyleSecond()
 
+        screens.forEach((screen, index) => {
+            const input = screen.querySelector('input')
+            const select = screen.querySelector('select')
+
+            if (index !== 0) {
+                screen.remove()
+            } else {
+                select.value = ''
+                input.value = ''
+            }
+        })
+
+        screens.forEach((screen) => {
+            const select = screen.querySelector('select')
+            const input = screen.querySelector('input')
+
+            const resetInputs = () => {            
+                
+                
+                otherItemsPercent.forEach((item) => {
+                    const check = item.querySelector('input[type=checkbox]')
+                    check.disabled = false
+                    check.checked = false
+                })  
+                otherItemsNumber.forEach((item) => {
+                    const check = item.querySelector('input[type=checkbox]')
+                    check.disabled = false
+                    check.checked = false
+                })  
+                
+                screens.forEach((screen) => {
+                    const select = screen.querySelector('select')
+                    const input = screen.querySelector('input')
+        
+                    input.disabled = false
+                    select.disabled = false
+                    buttonPlus.disabled = false
+                })
+
+                inputRange.value = 0
+                inputRangeValue.textContent = inputRange.value + '%'
+            }
+            resetInputs()
+        })
+    },
+    switchStyleSecond: () => {
+        startBtn.style.display = 'block'
+        resetBtn.style.display = 'none'
     },
     resetResult: () => {
-        total.value = ''
-        totalCountOther.value = ''
-        fullTotalCount.value = ''
-        totalCountRollback.value = ''
-        totalCount.value = ''
+        total.value = '0'
+        totalCountOther.value = '0'
+        fullTotalCount.value = '0'
+        totalCountRollback.value = '0'
+        totalCount.value = '0'
         
         appData.screens.length = 0
         this.screenPrice = 0
