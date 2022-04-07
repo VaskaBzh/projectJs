@@ -32,45 +32,86 @@ const appData = {
     servicePercentPrices: 0,
     servicesPercent: {},
     servicesNumber: {},
-    init: function () {
+    init: () => {
 
         appData.addTitle()
+        appData.getRollback()
 
-        startBtn.addEventListener('click', function () {
-            appData.start()
+        startBtn.addEventListener('click', () => {
 
-            inputRange.addEventListener('input', function () {
+            inputRange.addEventListener('input', () => {
                 appData.getRollback()
                 appData.showRollback()
-                console.log(appData.servicePercentPrices)
             })
-        })
-
-        startBtn.addEventListener('mouseover', function () {
-            screens = document.querySelectorAll('.screen')
-
-            screens.forEach(function(screen) {
+            
+            otherItemsPercent.forEach((item) => {
+                const check = item.querySelector('input[type=checkbox]')
+                const input = item.querySelector('input[type=text]')
+            
+                input.disabled = true
+                check.disabled = true
+            })  
+            otherItemsNumber.forEach((item) => {
+                const check = item.querySelector('input[type=checkbox]')
+                const input = item.querySelector('input[type=text]')
+                
+                input.disabled = true
+                check.disabled = true
+            })  
+            
+            screens.forEach((screen) => {
                 const select = screen.querySelector('select')
                 const input = screen.querySelector('input')
     
-                function BtnNotAllow() {
+                input.disabled = true
+                select.disabled = true
+                buttonPlus.disabled = true
+            })
+        })
+
+        startBtn.addEventListener('click', () => {
+            screens = document.querySelectorAll('.screen')
+
+            screens.forEach((screen) => {
+                const select = screen.querySelector('select')
+                const input = screen.querySelector('input')
+    
+                function btnNotAllow() {
+                    if (input.value != 0 && select.value != 0) {
+                        startBtn.style.cursor = 'pointer'
+                        appData.start()
+                    }  else {
+                        startBtn.style.cursor = 'not-allowed'
+                    }
+                }
+                btnNotAllow()
+            })
+        })
+        startBtn.addEventListener('mouseover', () => {
+            screens = document.querySelectorAll('.screen')
+
+            screens.forEach((screen) => {
+                const select = screen.querySelector('select')
+                const input = screen.querySelector('input')
+    
+                function btnNotAllow() {
                     if (input.value != 0 && select.value != 0) {
                         startBtn.style.cursor = 'pointer'
                     }  else {
                         startBtn.style.cursor = 'not-allowed'
                     }
                 }
-                BtnNotAllow()
+                btnNotAllow()
             })
         })
 
 
         buttonPlus.addEventListener('click', appData.addScreenBlock)
     },
-    addTitle: function () {
+    addTitle: () => {
         document.title = title.textContent
     },
-    start: function () {
+    start: () => {
         appData.resetResult()
         appData.addScreens()
         appData.addServices()
@@ -81,14 +122,14 @@ const appData = {
         appData.showRollback()
         appData.showResult()
     },
-    getNumber: function (num) {
+    getNumber: (num) => {
         let numNew = Number(String(num).trim())
         return numNew
     },
-    addScreens: function () {
+    addScreens: () => {
         screens = document.querySelectorAll('.screen')
 
-        screens.forEach(function(screen, index) {
+        screens.forEach((screen, index) => {
             const select = screen.querySelector('select')
             const input = screen.querySelector('input')
             const selectName = select.options[select.selectedIndex].textContent
@@ -100,10 +141,10 @@ const appData = {
             })
         })
 
-        appData.count = screens.length
+        this.count = screens.length
     },
-    addServices: function () {
-      otherItemsPercent.forEach(function (item) {
+    addServices: () => {
+      otherItemsPercent.forEach((item) => {
           const check = item.querySelector('input[type=checkbox]')
           const label = item.querySelector('label')
           const input = item.querySelector('input[type=text]')
@@ -112,7 +153,7 @@ const appData = {
             appData.servicesPercent[label.textContent] = +input.value
           }
       })  
-      otherItemsNumber.forEach(function (item) {
+      otherItemsNumber.forEach((item) => {
         const check = item.querySelector('input[type=checkbox]')
         const label = item.querySelector('label')
         const input = item.querySelector('input[type=text]')
@@ -120,48 +161,51 @@ const appData = {
         if(check.checked) {
           appData.servicesNumber[label.textContent] = +input.value
         }
-    })  
+      })  
     },
-    addScreenBlock: function () {
+    addScreenBlock: () => {
         screens = document.querySelectorAll('.screen')
 
         const cloneScreen = screens[0].cloneNode(true)
 
         screens[screens.length - 1].after(cloneScreen)
     },
-    getRollback: function () {
-        inputRange.addEventListener('input', function () {
+    getRollback: () => {
+        inputRange.addEventListener('input', () => {
             inputRangeValue.textContent = inputRange.value + '%'
-            appData.rollback = inputRange.value
-        })
+            this.rollback = inputRange.value
+        }) 
     },
-    addPrices: function() {
+    addPrices: () => {
         for (let screen of appData.screens) {
-            appData.screenPrice += +screen.price
+            this.screenPrice += +screen.price
         }
         
         for (let key in appData.servicesNumber) {
-            appData.servicePricesNumber += appData.servicesNumber[key]
+            this.servicePricesNumber += appData.servicesNumber[key]
         }
         
         for (let key in appData.servicesPercent) {
-            appData.servicePricesPercent += appData.screenPrice * (appData.servicesPercent[key] / 100)
+            this.servicePricesPercent += this.screenPrice * (appData.servicesPercent[key] / 100)
         }
 
-        appData.fullPrice = +appData.screenPrice + appData.servicePricesNumber + appData.servicePricesPercent
+        this.fullPrice = +this.screenPrice + this.servicePricesNumber + this.servicePricesPercent
     },
-    showRollback: function () {
-        appData.servicePercentPrices = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100))
+    showRollback: () => {
+        appData.servicePercentPrices = this.fullPrice - (this.fullPrice * (this.rollback / 100))
 
         totalCountRollback.value = appData.servicePercentPrices
     },
-    showResult: function () {
-        total.value = appData.screenPrice
-        totalCountOther.value = appData.servicePricesPercent + appData.servicePricesNumber
-        fullTotalCount.value = appData.fullPrice
-        totalCount.value = appData.count
+    showResult: () => {
+        total.value = this.screenPrice
+        totalCountOther.value = this.servicePricesPercent + this.servicePricesNumber
+        fullTotalCount.value = this.fullPrice
+        totalCount.value = this.count
     },
-    resetResult: function () {
+    reset: () => {
+
+    },
+    resetResult: () => {
         total.value = ''
         totalCountOther.value = ''
         fullTotalCount.value = ''
@@ -169,19 +213,19 @@ const appData = {
         totalCount.value = ''
         
         appData.screens.length = 0
-        appData.screenPrice = 0
-        appData.servicePricesNumber = 0
-        appData.servicePricesPercent = 0
-        appData.fullPrice = 0
-        appData.servicePercentPrices = 0
+        this.screenPrice = 0
+        this.servicePricesNumber = 0
+        this.servicePricesPercent = 0
+        this.fullPrice = 0
+        this.servicePercentPrices = 0
     },
-    showTypeOff: function(variable) {
+    showTypeOff: (variable) => {
         console.log(variable, typeof variable);
     },
-    logger: function () {
+    logger: () => {
         for(let prop in appData) {
             if (typeof appData[prop] !== "function") {
-                appData.showTypeOff(appData[prop])
+                this.showTypeOff(appData[prop])
             }
         }
     }
